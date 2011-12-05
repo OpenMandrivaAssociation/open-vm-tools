@@ -67,7 +67,7 @@ find . -name \*.la -delete
 
 rm -f %{buildroot}/sbin/mount.vmhgfs
 
-ln -s %{buildroot}/%{_sbindir}/mount.vmhgfs %{buildroot}/sbin/
+ln -s ../%{_sbindir}/mount.vmhgfs %{buildroot}/sbin/mount.vmhgfs
 
 rm -f %{buildroot}/%{_libdir}/{*.la,*.a}
 rm -f %{buildroot}/%{_libdir}/%{name}/plugins/common/{*.la,*.a}
