@@ -1,23 +1,27 @@
 %define major   0
 %define libname %mklibname	open-vm-tools %major
 %define devname %mklibname      open-vm-tools -d
+%define	svn_rev 1098359
+%define	Werror_cflags %nil
 
 Name:           open-vm-tools
 Group:          System/Emulators/PC
 Summary:        Open Virtual Machine Tools
-Version:        2011.11.20
+Version:        2013.04.16
 Release:        1
-%define         svn_rev 535097
 Url:            http://open-vm-tools.sourceforge.net/
 License:        BSD 3-Clause; GPL v2 only; LGPL v2.1 only
-Source:         %{name}-%{version}-%{svn_rev}.tar.gz
-BuildRequires:  gcc-c++
-BuildRequires:  libdnet-devel libicu-devel pcre-devel procps
-BuildRequires:  gtk2-devel libx11-devel
+Source0:        %{name}-%{version}-%{svn_rev}.tar.gz
+BuildRequires:	icu-devel
+BuildRequires:	pcre-devel
+BuildRequires:  gtk+2.0-devel
+BuildRequires:  dnet-devel
 BuildRequires:  gtkmm2.4-devel
+BuildRequires:  pkgconfig(x11)
 BuildRequires:  doxygen fuse-devel
-BuildRequires:  pam-devel libxtst-devel
-Patch0:		unused_libs.patch
+BuildRequires:	pkgconfig(xtst)
+BuildRequires:	pkgconfig(libprocps)
+BuildRequires:	pkgconfig(gdk-pixbuf-xlib-2.0)
 
 Requires:	%{libname} = %{version}-%{release}
 Requires:	%{name}-plugins	
@@ -86,17 +90,29 @@ tied to a specific virtualization platform.
 
 %prep
 %setup -q -n %{name}-%{version}-%{svn_rev}
-%patch0 -p1
+#% patch0 -p1
 chmod -x AUTHORS COPYING ChangeLog NEWS README
 
+# Do not filter out Werror
+# Upstream Bug  http://sourceforge.net/tracker/?func=detail&aid=2959749&group_id=204462&atid=989708
+# sed -i -e 's/CFLAGS=.*Werror/#&/g' configure || die "sed comment out Werror failed"
+sed -i -e 's:\(TEST_PLUGIN_INSTALLDIR=\).*:\1\$libdir/open-vm-tools/plugins/tests:g' configure
+sed -i -e 's:\(TEST_PLUGIN_INSTALLDIR=\).*:\1\$libdir/open-vm-tools/plugins/tests:g' configure
+sed -i -e 's/proc-3.2.7/proc-3.3.8/g' configure* 
+sed -i -e 's/-Werror//g' configure.ac
 
 %build
+autoreconf -fiv
+#export CUSTOM_PROCPS_NAME=procps
+#export CUSTOM_PROCPS_LIBS="pkg-config --libs libprocps"
+find ./ -name Makefile | xargs sed -i -e 's/-Werror//g'
 %configure \
     --without-kernel-modules \
     --with-procps \
     --with-dnet \
     --disable-dependency-tracking
-%make
+
+%make LIBS="-ltirpc" CFLAGS="%optflags -Wno-implicit-function-declaration"
 
 %install
 %makeinstall_std
@@ -109,7 +125,6 @@ ln -s ../%{_sbindir}/mount.vmhgfs %{buildroot}/sbin/mount.vmhgfs
 
 rm -f %{buildroot}/%{_libdir}/{*.la,*.a}
 rm -f %{buildroot}/%{_libdir}/%{name}/plugins/common/{*.la,*.a}
-
 
 %files
 %doc AUTHORS COPYING ChangeLog NEWS README
