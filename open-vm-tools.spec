@@ -8,7 +8,7 @@ Name:           open-vm-tools
 Group:          System/Emulators/PC
 Summary:        Open Virtual Machine Tools
 Version:        2013.04.16
-Release:        2
+Release:        3
 Url:            http://open-vm-tools.sourceforge.net/
 License:        BSD 3-Clause; GPL v2 only; LGPL v2.1 only
 Source0:        %{name}-%{version}-%{svn_rev}.tar.gz
