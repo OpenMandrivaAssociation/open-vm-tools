@@ -1,30 +1,30 @@
-%define major   0
-%define libname %mklibname	open-vm-tools %major
-%define devname %mklibname      open-vm-tools -d
-%define	svn_rev 1098359
+%define devname %mklibname open-vm-tools -d
+%define	svn_rev 1280544
 %define	Werror_cflags %nil
 
-Name:           open-vm-tools
-Group:          System/Emulators/PC
-Summary:        Open Virtual Machine Tools
-Version:        2013.04.16
-Release:        6
-Url:            http://open-vm-tools.sourceforge.net/
-License:        BSD 3-Clause; GPL v2 only; LGPL v2.1 only
-Source0:        %{name}-%{version}-%{svn_rev}.tar.gz
-BuildRequires:	icu-devel
-BuildRequires:	pcre-devel
-BuildRequires:  gtk+2.0-devel
-BuildRequires:  dnet-devel
-BuildRequires:  gtkmm2.4-devel
+Name:		open-vm-tools
+Group:		Emulators
+Summary:	Open Virtual Machine Tools
+Version:	9.4.0
+Epoch:		1
+Release:	1
+Url:		http://open-vm-tools.sourceforge.net/
+License:	GPLv2
+Source0:	%{name}-%{version}-%{svn_rev}.tar.gz
+Source1:	vmtoolsd.service
+Patch0:		g_info_redefine.patch
+Patch1:		0001-kernel-module-build-fixes.patch
+BuildRequires:	dnet-devel
+BuildRequires:	doxygen
+BuildRequires:	pkgconfig(fuse)
+BuildRequires:	pkgconfig(gdk-pixbuf-xlib-2.0)
+BuildRequires:  pkgconfig(gtk+-2.0)
+BuildRequires:	pkgconfig(icu-uc)
+BuildRequires:  pkgconfig(gtkmm-2.4)
+BuildRequires:	pkgconfig(libpcre)
 BuildRequires:  pkgconfig(x11)
-BuildRequires:  doxygen fuse-devel
 BuildRequires:	pkgconfig(xtst)
 BuildRequires:	pkgconfig(libprocps)
-BuildRequires:	pkgconfig(gdk-pixbuf-xlib-2.0)
-
-Requires:	%{libname} = %{version}-%{release}
-Requires:	%{name}-plugins	
 
 %description
 Open Virtual Machine Tools (open-vm-tools) are the open source
@@ -50,111 +50,124 @@ useful functions like:
 * General mechanisms and protocols for communication between host and
 guests and from guest to guest
 
-%package -n	%devname
+%{libpackage guestlib 0}
+%{libpackage hgfs 0}
+%{libpackage vmtools 0}
+
+%package -n	%{devname}
 Summary:	Open Virtual Machine Tools development files
-License:	BSD 3-Clause; GPL v2 only; LGPL v2.1 only
 Group:		System/Kernel and hardware	
-Requires:       %{libname} = %{version}-%{release}
-Provides:	open-vm-tools-devel = %{version}-%{release}
+Requires:       %{_lib}guestlib0 = %{EVRD}
+Requires:       %{_lib}hgfs0 = %{EVRD}
+Requires:       %{_lib}vmtools0 = %{EVRD}
+Provides:	%{name}-devel = %{EVRD}
 
-
-%description -n %devname
+%description -n %{devname}
 Open Virtual Machine Tools development files
 
-%package -n	open-vm-tools-plugins
-Summary:	Open Virtual Machine Tools plugins
-License:	BSD 3-Clause; GPL v2 only; LGPL v2.1 only
-Group:		System/Kernel and hardware
-Requires:	%{libname} = %{version}-%{release}
-Requires:	%{name} = %{version}-%{release}
-
-
-%package -n	%libname
-Summary:	Open Virtual Machine Tools libs
+%package	desktop
+Summary:	User experience components for Open Virtual Machine Tools
 Group:		System/Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{EVRD}
 
+%description	desktop
+This package contains only the user-space programs and libraries of
+%{name} that are essential for improved user experience of VMware virtual
+machines.
 
-%description -n	%libname
-Open Virtual Machine Tools (open-vm-tools) are the open source
-implementation of VMware Tools. They are a set of guest operating
-system virtualization components that enhance performance and user
-experience of virtual machines. As virtualization technology rapidly
-becomes mainstream, each virtualization solution provider implements
-their own set of tools and utilities to supplement the guest virtual
-machine. However, most of the implementations are proprietary and are
-tied to a specific virtualization platform.
+%package -n     dkms-%{name}
+Summary:        Kernel modules for open-vm-tools
+Group:          System/Kernel and hardware
+License:        LGPLv2
+Requires(post):	dkms
+Requires(preun):dkms
 
-
-
+%description -n dkms-%{name}
+Kernel modules for open-vm-tools
 
 %prep
 %setup -q -n %{name}-%{version}-%{svn_rev}
-#% patch0 -p1
-chmod -x AUTHORS COPYING ChangeLog NEWS README
+%patch0 -p1 -b .g_info~
+%patch1 -p1 -b .modules~
 
-# Do not filter out Werror
-# Upstream Bug  http://sourceforge.net/tracker/?func=detail&aid=2959749&group_id=204462&atid=989708
-# sed -i -e 's/CFLAGS=.*Werror/#&/g' configure || die "sed comment out Werror failed"
-sed -i -e 's:\(TEST_PLUGIN_INSTALLDIR=\).*:\1\$libdir/open-vm-tools/plugins/tests:g' configure
-sed -i -e 's:\(TEST_PLUGIN_INSTALLDIR=\).*:\1\$libdir/open-vm-tools/plugins/tests:g' configure
-sed -i -e 's/proc-3.2.7/proc-3.3.8/g' configure* 
-sed -i -e 's/-Werror//g' configure.ac
+# Remove "Encoding" key from the "Desktop Entry"
+sed -e "s|^Encoding.*$||g" -i ./vmware-user-suid-wrapper/vmware-user.desktop.in
+
 
 %build
-autoreconf -fiv
-#export CUSTOM_PROCPS_NAME=procps
-#export CUSTOM_PROCPS_LIBS="pkg-config --libs libprocps"
-find ./ -name Makefile | xargs sed -i -e 's/-Werror//g'
-%configure \
-    --without-kernel-modules \
-    --with-procps \
-    --with-dnet \
-    --disable-dependency-tracking
-
-%make LIBS="-ltirpc" CFLAGS="%optflags -Wno-implicit-function-declaration"
+export CUSTOM_PROCPS_NAME=procps
+export CUSTOM_PROCPS_LIBS="$(pkg-config --libs libprocps)"
+%configure	--without-kernel-modules \
+		--without-root-privileges \
+		--with-procps \
+		--with-dnet \
+		LIBS="-ltirpc"
+%make CFLAGS="%{optflags} -Wno-implicit-function-declaration"
 
 %install
 %makeinstall_std
-find . -name \*.la -delete
-#ln -s % {buildroot}/ % {_sbindir}/mount.vmhgfs % {buildroot}/sbin/mount.vmhgfs
 
-rm -f %{buildroot}/sbin/mount.vmhgfs
+chmod 644 %{buildroot}%{_sysconfdir}/pam.d/*
+ln -sf %{_sbindir}/mount.vmhgfs %{buildroot}/sbin/mount.vmhgfs
 
-ln -s ../%{_sbindir}/mount.vmhgfs %{buildroot}/sbin/mount.vmhgfs
+# Move vm-support to /usr/bin
+mv %{buildroot}%{_sysconfdir}/vmware-tools/vm-support %{buildroot}%{_bindir}
 
-rm -f %{buildroot}/%{_libdir}/{*.la,*.a}
-rm -f %{buildroot}/%{_libdir}/%{name}/plugins/common/{*.la,*.a}
+# Systemd unit files
+install -p -m644 %{SOURCE1} -D %{buildroot}%{_unitdir}/vmtoolsd.service
+
+##
+## Package dkms
+##
+# Create dkms tree and fill it
+sh modules/linux/dkms.sh . %{buildroot}%{_usrsrc}
+
+%post -n dkms-%{name}
+/usr/sbin/dkms --rpm_safe_upgrade add -m %{name} -v %{version}
+/usr/sbin/dkms --rpm_safe_upgrade build -m %{name} -v %{version}
+/usr/sbin/dkms --rpm_safe_upgrade install -m %{name} -v %{version}
+:
+
+%preun -n dkms-%{name}
+set -x
+/usr/sbin/dkms --rpm_safe_upgrade remove -m %{name} -v %{version} --all
+:
 
 %files
 %doc AUTHORS COPYING ChangeLog NEWS README
-%{_bindir}/*
+%config(noreplace) %{_sysconfdir}/pam.d/*
+%{_sysconfdir}/vmware-tools/
+%{_bindir}/vmtoolsd
+%{_bindir}/vmware-checkvm
+%{_bindir}/vmware-hgfsclient
+%{_bindir}/vmware-rpctool
+%{_bindir}/vmware-toolbox-cmd
+%{_bindir}/vmware-xferlogs
+%{_bindir}/vm-support
 %{_sbindir}/mount.vmhgfs
 /sbin/mount.vmhgfs
-%config %{_sysconfdir}/vmware-tools
-%config %{_sysconfdir}/pam.d/vmtoolsd
-%{_datadir}/open-vm-tools/
-%{_sysconfdir}/xdg/autostart/vmware-user.desktop
+%dir %{_libdir}/%{name}/
+%dir %{_libdir}/%{name}/plugins
+%dir %{_libdir}/%{name}/plugins/common
+%{_libdir}/%{name}/plugins/common/*.so
+%dir %{_libdir}/%{name}/plugins/vmsvc
+%{_libdir}/%{name}/plugins/vmsvc/*.so
+%{_datadir}/%{name}/
+%{_unitdir}/vmtoolsd.service
 
-%files -n %libname
-%{_libdir}/libguestlib.so.*
-%{_libdir}/libhgfs.so.*
-%{_libdir}/libvmtools.so.*
+%files desktop
+%{_sysconfdir}/xdg/autostart/*.desktop
+%{_bindir}/vmware-user-suid-wrapper
+%{_bindir}/vmware-vmblock-fuse
+%{_libdir}/%{name}/plugins/vmusr/
 
-%files -n open-vm-tools-plugins
-%{_libdir}/open-vm-tools/plugins/common/libhgfsServer.so
-%{_libdir}/open-vm-tools/plugins/common/libvix.so
-%{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
-%{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
-%{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
-%{_libdir}/open-vm-tools/plugins/vmsvc/libvmbackup.so
-%{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
-%{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
-%{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
-
-%files -n %devname 
+%files -n %{devname}
+%doc docs/api/build/*
 %{_includedir}/vmGuestLib/*
 %{_libdir}/libhgfs.so
 %{_libdir}/pkgconfig/vmguestlib.pc
 %{_libdir}/libguestlib.so
 %{_libdir}/libvmtools.so
+
+%files -n dkms-%{name}
+%{_usrsrc}/%{name}-%{version}
