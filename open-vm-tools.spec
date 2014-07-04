@@ -14,6 +14,7 @@ Source0:	%{name}-%{version}-%{svn_rev}.tar.gz
 Source1:	vmtoolsd.service
 Patch0:		g_info_redefine.patch
 Patch1:		0001-fix-3.14-compatibility.patch
+Patch2:		open-vm-tools-9.4.0-1280544-dkms.sh-destdir.patch
 BuildRequires:	dnet-devel
 BuildRequires:	doxygen
 BuildRequires:	pkgconfig(fuse)
@@ -89,6 +90,7 @@ Kernel modules for open-vm-tools
 %setup -q -n %{name}-%{version}-%{svn_rev}
 %patch0 -p1 -b .g_info~
 %patch1 -p1 -b .modules~
+%patch2 -p1 -b .dkms_destdir~
 
 # Remove "Encoding" key from the "Desktop Entry"
 sed -e "s|^Encoding.*$||g" -i ./vmware-user-suid-wrapper/vmware-user.desktop.in
@@ -120,17 +122,17 @@ install -p -m644 %{SOURCE1} -D %{buildroot}%{_unitdir}/vmtoolsd.service
 ## Package dkms
 ##
 # Create dkms tree and fill it
-sh modules/linux/dkms.sh . %{buildroot}%{_usrsrc}
+sh modules/linux/dkms.sh . %{buildroot}%{_usrsrc}/%{name}-%{version}-%{release}
 
 %post -n dkms-%{name}
-/usr/sbin/dkms --rpm_safe_upgrade add -m %{name} -v %{version}
-/usr/sbin/dkms --rpm_safe_upgrade build -m %{name} -v %{version}
-/usr/sbin/dkms --rpm_safe_upgrade install -m %{name} -v %{version}
+/usr/sbin/dkms --rpm_safe_upgrade add -m %{name} -v %{version}-%{release}
+/usr/sbin/dkms --rpm_safe_upgrade build -m %{name} -v %{version}-%{release}
+/usr/sbin/dkms --rpm_safe_upgrade install -m %{name} -v %{version}-%{release}
 :
 
 %preun -n dkms-%{name}
 set -x
-/usr/sbin/dkms --rpm_safe_upgrade remove -m %{name} -v %{version} --all
+/usr/sbin/dkms --rpm_safe_upgrade remove -m %{name} -v %{version}-%{release} --all
 :
 
 %files
@@ -170,4 +172,4 @@ set -x
 %{_libdir}/libvmtools.so
 
 %files -n dkms-%{name}
-%{_usrsrc}/%{name}-%{version}
+%{_usrsrc}/%{name}-%{version}-%{release}
