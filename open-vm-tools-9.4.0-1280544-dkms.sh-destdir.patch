@@ -4,7 +4,7 @@
  fi
  
  src=$1
--dst=$2/open-vm-tools-9.4.0
+-dst=$2/open-vm-tools-9.4.6
 +dst=$2
  
  SHARED_HEADERS="backdoor_def.h"
