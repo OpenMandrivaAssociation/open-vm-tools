@@ -17,6 +17,7 @@ Patch2:		open-vm-tools-9.4.0-1280544-dkms.sh-destdir.patch
 BuildRequires:	autoconf
 BuildRequires:	dnet-devel
 BuildRequires:	doxygen
+BuildRequires:	pam-devel
 BuildRequires:	pkgconfig(fuse)
 BuildRequires:	pkgconfig(gdk-pixbuf-xlib-2.0)
 BuildRequires:  pkgconfig(gtk+-2.0)
