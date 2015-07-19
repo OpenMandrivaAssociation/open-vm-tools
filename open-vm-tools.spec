@@ -7,7 +7,7 @@ Group:		Emulators
 Summary:	Open Virtual Machine Tools
 Version:	9.4.6
 Epoch:		1
-Release:	6
+Release:	7
 Url:		http://open-vm-tools.sourceforge.net/
 License:	GPLv2
 Source0:	%{name}-%{version}-%{svn_rev}.tar.gz
