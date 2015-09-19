@@ -1,13 +1,13 @@
 %define devname %mklibname open-vm-tools -d
-%define	svn_rev 1770165
+%define	svn_rev 3000743
 %define	Werror_cflags %nil
 
 Name:		open-vm-tools
 Group:		Emulators
 Summary:	Open Virtual Machine Tools
-Version:	9.4.6
+Version:	10.0.0
 Epoch:		1
-Release:	8
+Release:	1
 Url:		http://open-vm-tools.sourceforge.net/
 License:	GPLv2
 Source0:	%{name}-%{version}-%{svn_rev}.tar.gz
