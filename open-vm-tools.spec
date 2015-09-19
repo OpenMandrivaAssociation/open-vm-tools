@@ -12,8 +12,7 @@ Url:		http://open-vm-tools.sourceforge.net/
 License:	GPLv2
 Source0:	%{name}-%{version}-%{svn_rev}.tar.gz
 Source1:	vmtoolsd.service
-Patch0:		g_info_redefine.patch
-Patch2:		open-vm-tools-9.4.0-1280544-dkms.sh-destdir.patch
+Patch0:		open-vm-tools-10.0.0-3000743-dkms.sh-destdir.patch
 BuildRequires:	autoconf
 BuildRequires:	dnet-devel
 BuildRequires:	doxygen
@@ -90,8 +89,7 @@ Kernel modules for open-vm-tools
 
 %prep
 %setup -q -n %{name}-%{version}-%{svn_rev}
-%patch0 -p1 -b .g_info~
-%patch2 -p1 -b .dkms_destdir~
+%patch0 -p1 -b .dkms_destdir~
 
 # Remove "Encoding" key from the "Desktop Entry"
 sed -e "s|^Encoding.*$||g" -i ./vmware-user-suid-wrapper/vmware-user.desktop.in

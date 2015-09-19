@@ -1,0 +1,13 @@
+Index: open-vm-tools-10.0.0-3000743/modules/linux/dkms.sh
+===================================================================
+--- open-vm-tools-10.0.0-3000743.orig/modules/linux/dkms.sh
++++ open-vm-tools-10.0.0-3000743/modules/linux/dkms.sh
+@@ -33,7 +33,7 @@ then
+ fi
+ 
+ src=$1
+-dst=$2/open-vm-tools-10.0.0
++dst=$2
+ 
+ SHARED_HEADERS="backdoor_def.h"
+ SHARED_HEADERS="$SHARED_HEADERS backdoor_types.h"
