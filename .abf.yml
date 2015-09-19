@@ -1,3 +1,5 @@
-sources:
+removed_sources:
   open-vm-tools-10.0.0-3000743.tar.gz: 8daef4e2b0ee619c571e735cbd98da2b2609f805
+sources:
+  open-vm-tools-10.0.0-3000743.tar.gz: dc02ba6a8189131778574bc79744918d7fc7cb73
   open-vm-tools-9.4.6-1770165.tar.gz: 5d862148167cb0a56219d018e7d8d965118e1dde
