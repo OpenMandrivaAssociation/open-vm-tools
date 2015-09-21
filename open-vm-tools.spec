@@ -28,6 +28,7 @@ BuildRequires:  pkgconfig(x11)
 BuildRequires:	pkgconfig(xtst)
 BuildRequires:	pkgconfig(libprocps)
 BuildRequires:	pkgconfig(xerces-c)
+BuildRequires:	pkgconfig(libmspack)
 BuildRequires:	xml-security-c-devel
 
 %description
