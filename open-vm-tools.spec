@@ -27,6 +27,8 @@ BuildRequires:	pkgconfig(libtirpc)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:	pkgconfig(xtst)
 BuildRequires:	pkgconfig(libprocps)
+BuildRequires:	pkgconfig(xerces-c)
+BuildRequires:	xml-security-c-devel
 
 %description
 Open Virtual Machine Tools (open-vm-tools) are the open source
@@ -88,23 +90,25 @@ Requires(preun):dkms
 Kernel modules for open-vm-tools
 
 %prep
-%setup -q -n %{name}-%{version}-%{svn_rev}
-%patch0 -p1 -b .dkms_destdir~
+%setup -q -n %{name}-%{name}-%{version}-%{svn_rev}
+%apply_patches
 
 # Remove "Encoding" key from the "Desktop Entry"
-sed -e "s|^Encoding.*$||g" -i ./vmware-user-suid-wrapper/vmware-user.desktop.in
+sed -e "s|^Encoding.*$||g" -i %{name}/vmware-user-suid-wrapper/vmware-user.desktop.in
 
 
 %build
 export CUSTOM_PROCPS_NAME=procps
 export CUSTOM_PROCPS_LIBS="$(pkg-config --libs libprocps)"
+pushd %{name}
 autoreconf -fiv
-export CXX=g++
+export ac_cv_prog_ac_ct_have_cxx=%{__cxx}
 %configure	--without-kernel-modules \
 		--without-root-privileges \
 		--with-procps \
 		--with-dnet \
 		LIBS="-ltirpc"
+
 %make CFLAGS="%{optflags} -Wno-implicit-function-declaration"
 
 %install

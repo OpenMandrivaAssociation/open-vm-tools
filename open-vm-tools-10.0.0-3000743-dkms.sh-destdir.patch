@@ -1,7 +1,7 @@
-Index: open-vm-tools-10.0.0-3000743/modules/linux/dkms.sh
-===================================================================
---- open-vm-tools-10.0.0-3000743.orig/modules/linux/dkms.sh
-+++ open-vm-tools-10.0.0-3000743/modules/linux/dkms.sh
+diff --git a/open-vm-tools/modules/linux/dkms.sh b/open-vm-tools/modules/linux/dkms.sh
+index ae9e748..2e500f4 100644
+--- a/open-vm-tools/modules/linux/dkms.sh
++++ b/open-vm-tools/modules/linux/dkms.sh
 @@ -33,7 +33,7 @@ then
  fi
  
