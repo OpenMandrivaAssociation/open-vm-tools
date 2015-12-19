@@ -1,11 +1,14 @@
 %define devname %mklibname open-vm-tools -d
-%define	svn_rev 3000743
+%define	svn_rev 3227872
 %define	Werror_cflags %nil
+
+%define _disable_lto 1
+%define _disable_ld_no_undefined 1
 
 Name:		open-vm-tools
 Group:		Emulators
 Summary:	Open Virtual Machine Tools
-Version:	10.0.0
+Version:	10.0.5
 Epoch:		1
 Release:	1
 Url:		http://open-vm-tools.sourceforge.net/
@@ -13,6 +16,7 @@ License:	GPLv2
 Source0:	%{name}-%{version}-%{svn_rev}.tar.gz
 Source1:	vmtoolsd.service
 Patch0:		open-vm-tools-10.0.0-3000743-dkms.sh-destdir.patch
+Patch1:		open-vm-tools-clang.patch
 BuildRequires:	autoconf
 BuildRequires:	dnet-devel
 BuildRequires:	doxygen
@@ -58,12 +62,16 @@ guests and from guest to guest
 %{libpackage guestlib 0}
 %{libpackage hgfs 0}
 %{libpackage vmtools 0}
+%{libpackage DeployPkg 0}
+%{libpackage vgauth 0}
 
 %package -n	%{devname}
 Summary:	Open Virtual Machine Tools development files
 Group:		System/Kernel and hardware	
+Requires:	%{_lib}DeployPkg0 = %{EVRD}
 Requires:       %{_lib}guestlib0 = %{EVRD}
 Requires:       %{_lib}hgfs0 = %{EVRD}
+Requires:	%{_lib}vgauth0 = %{EVRD}
 Requires:       %{_lib}vmtools0 = %{EVRD}
 Provides:	%{name}-devel = %{EVRD}
 
@@ -91,19 +99,22 @@ Requires(preun):dkms
 Kernel modules for open-vm-tools
 
 %prep
-%setup -q -n %{name}-%{name}-%{version}-%{svn_rev}
+%setup -q -n %{name}-%{version}-%{svn_rev}
 %apply_patches
 
 # Remove "Encoding" key from the "Desktop Entry"
-sed -e "s|^Encoding.*$||g" -i %{name}/vmware-user-suid-wrapper/vmware-user.desktop.in
+sed -e "s|^Encoding.*$||g" -i vmware-user-suid-wrapper/vmware-user.desktop.in
 
 
 %build
 export CUSTOM_PROCPS_NAME=procps
 export CUSTOM_PROCPS_LIBS="$(pkg-config --libs libprocps)"
-pushd %{name}
+export CFLAGS="%{optflags} -Wno-error -Dlinux=1"
+export CXXFLAGS="%{optflags} -Wno-error -Dlinux=1"
+
 autoreconf -fiv
 export ac_cv_prog_ac_ct_have_cxx=%{__cxx}
+export CXX='%{__cxx} -std=c++11'
 %configure	--without-kernel-modules \
 		--without-root-privileges \
 		--with-procps \
@@ -152,6 +163,10 @@ set -x
 %{_bindir}/vmware-toolbox-cmd
 %{_bindir}/vmware-xferlogs
 %{_bindir}/vm-support
+%{_bindir}/VGAuthService
+%{_bindir}/vmhgfs-fuse
+%{_bindir}/vmware-guestproxycerttool
+%{_bindir}/vmware-vgauth-cmd
 %{_sbindir}/mount.vmhgfs
 /sbin/mount.vmhgfs
 %dir %{_libdir}/%{name}/
@@ -172,10 +187,14 @@ set -x
 %files -n %{devname}
 %doc docs/api/build/*
 %{_includedir}/vmGuestLib/*
+%{_includedir}/libDeployPkg
 %{_libdir}/libhgfs.so
 %{_libdir}/pkgconfig/vmguestlib.pc
+%{_libdir}/pkgconfig/libDeployPkg.pc
 %{_libdir}/libguestlib.so
 %{_libdir}/libvmtools.so
+%{_libdir}/libDeployPkg.so
+%{_libdir}/libvgauth.so
 
 %files -n dkms-%{name}
 %{_usrsrc}/%{name}-%{version}-%{release}
