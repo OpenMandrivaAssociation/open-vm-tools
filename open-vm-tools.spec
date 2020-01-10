@@ -100,7 +100,7 @@ Kernel modules for open-vm-tools
 
 %prep
 %setup -q -n %{name}-%{version}-%{svn_rev}
-%apply_patches
+%autopatch -p1
 
 # Remove "Encoding" key from the "Desktop Entry"
 sed -e "s|^Encoding.*$||g" -i vmware-user-suid-wrapper/vmware-user.desktop.in
