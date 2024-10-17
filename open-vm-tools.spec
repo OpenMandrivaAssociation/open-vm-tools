@@ -11,7 +11,7 @@ Summary:	Open Virtual Machine Tools
 Version:	10.0.5
 Epoch:		1
 Release:	1
-Url:		http://open-vm-tools.sourceforge.net/
+Url:		https://open-vm-tools.sourceforge.net/
 License:	GPLv2
 Source0:	%{name}-%{version}-%{svn_rev}.tar.gz
 Source1:	vmtoolsd.service
