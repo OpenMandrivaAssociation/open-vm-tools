@@ -1,0 +1,12 @@
+# LGPLv.2.1 is a valid license
+addFilter("W: invalid-license")
+
+# False positive: the main package has files in %_libdir
+#addFilter("E: lib-package-without-%mklibname")
+
+# The files listed are conf files
+addFilter("W: non-conffile-in-etc")
+
+# Don't know ho to solve this issue
+addFilter("E: files-duplicated-waste")
+addFilter("W: files-duplicate ")

@@ -1,0 +1,13 @@
+diff -rupN open-vm-tools-stable-12.5.0.old/open-vm-tools/configure.ac open-vm-tools-stable-12.5.0/open-vm-tools/configure.ac
+--- open-vm-tools-stable-12.5.0.old/open-vm-tools/configure.ac	2024-10-10 17:05:07.000000000 +0200
++++ open-vm-tools-stable-12.5.0/open-vm-tools/configure.ac	2025-03-24 10:01:43.566356107 +0100
+@@ -1403,7 +1403,8 @@ AC_C_VOLATILE
+ 
+ ### General flags / actions
+ CFLAGS="$CFLAGS -Wall"
+-CFLAGS="$CFLAGS -Werror"
++# Avoid errors from unused functions (TimeInfoDataArray_*)
++#CFLAGS="$CFLAGS -Werror"
+ 
+ # -Wno-unknown-pragmas is due to gcc not understanding '#pragma ident'
+ # in Xlib.h on OpenSolaris.

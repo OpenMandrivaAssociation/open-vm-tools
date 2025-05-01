@@ -1,0 +1,14 @@
+[Unit]
+Description=VGAuth Service for open-vm-tools
+Documentation=http://github.com/vmware/open-vm-tools
+ConditionVirtualization=vmware
+DefaultDependencies=no
+After=systemd-remount-fs.service systemd-tmpfiles-setup.service
+PartOf=vmtoolsd.service
+
+[Service]
+ExecStart=/usr/bin/VGAuthService -s
+TimeoutStopSec=5
+
+[Install]
+RequiredBy=vmtoolsd.service
