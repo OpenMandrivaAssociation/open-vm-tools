@@ -1,4 +1,4 @@
-%%define	major 0
+%define		major 0
 %define		libdeploypkg %mklibname deploypkg %{major}
 %define		libguestlib %mklibname guestlib %{major}
 %define		libhgfs %mklibname hgfs %{major}
