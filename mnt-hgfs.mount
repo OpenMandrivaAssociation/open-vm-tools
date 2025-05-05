@@ -1,0 +1,17 @@
+[Unit]
+Description=VMware mount for hgfs
+Documentation=https://kb.vmware.com/s/article/74650
+DefaultDependencies=no
+Before=umount.target vmtoolsd.service
+ConditionVirtualization=vmware
+After=sys-fs-fuse-connections.mount
+Wants=vmtoolsd.service
+
+[Mount]
+What=vmhgfs-fuse
+Where=/mnt/hgfs
+Type=fuse
+Options=default_permissions,allow_other
+
+[Install]
+WantedBy=multi-user.target

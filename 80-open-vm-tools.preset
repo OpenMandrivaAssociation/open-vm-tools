@@ -1,0 +1,4 @@
+# Enable vmtoolsd, vgauthd and mnt-hgfs services
+enable vgauthd.service
+enable vmtoolsd.service
+#enable app-vmware-user.service

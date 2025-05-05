@@ -1,0 +1,10 @@
+diff -rupN open-vm-tools-stable-12.5.0.old/open-vm-tools/vmware-user-suid-wrapper/vmware-user.desktop.in open-vm-tools-stable-12.5.0/open-vm-tools/vmware-user-suid-wrapper/vmware-user.desktop.in
+--- open-vm-tools-stable-12.5.0.old/open-vm-tools/vmware-user-suid-wrapper/vmware-user.desktop.in	2024-10-10 17:05:07.000000000 +0200
++++ open-vm-tools-stable-12.5.0/open-vm-tools/vmware-user-suid-wrapper/vmware-user.desktop.in	2024-11-04 11:17:11.003839895 +0100
+@@ -5,3 +5,6 @@ Name=VMware User Agent
+ NoDisplay=true
+ X-KDE-autostart-phase=1
+ 
++# Prevent processing via systemd-xdg-autostart-generator: https://systemd.io/DESKTOP_ENVIRONMENTS/#xdg-autostart-integration
++# Correct service config is now provided by app-vmware-user.service
++X-systemd-skip=true
