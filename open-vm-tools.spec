@@ -6,11 +6,11 @@
 %define		libvmtools %mklibname vmtools %{major}
 %define		devname %mklibname %{name} -d
 
-Summary:	Open Virtual Machine Tools
+Summary:		Open Virtual Machine Tools
 Name:		open-vm-tools
-Version:	12.5.0
-Release:	1
-License:	LGPLv2.1
+Version:		12.5.2
+Release:		1
+License:		LGPLv2.1+
 Group:		Emulators
 Url:		https://github.com/vmware/open-vm-tools
 Source0:	https://github.com/vmware/open-vm-tools/archive/refs/tags/stable-%{version}.tar.gz?/%{name}-stable-%{version}.tar.gz
@@ -31,6 +31,7 @@ Patch1:		open-vm-tools-12.5.0-workaround-unused-fuctions-errors.patch
 BuildRequires:		doxygen
 BuildRequires:		protobuf-compiler
 BuildRequires:		dnet-devel
+#BuildRequires:		golang-github-gogo-protobuf-devel
 BuildRequires:		libtool-devel
 BuildRequires:		pam-devel
 BuildRequires:		pkgconfig(fuse3) >= 3.10.0
@@ -62,6 +63,7 @@ BuildRequires:		pkgconfig(xmlsec1)
 BuildRequires:		pkgconfig(xrandr)
 BuildRequires:		pkgconfig(xrender)
 BuildRequires:		pkgconfig(xtst)
+#Requires:	systemd-units
 Requires(post,preun,postun):		systemd
 
 %description
