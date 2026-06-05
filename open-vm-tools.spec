@@ -9,7 +9,7 @@
 Summary:		Open Virtual Machine Tools
 Name:		open-vm-tools
 Version:		13.0.10
-Release:		1
+Release:		2
 License:		LGPLv2.1+
 Group:		Emulators
 Url:		https://github.com/vmware/open-vm-tools
